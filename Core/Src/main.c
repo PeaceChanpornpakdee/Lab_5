@@ -111,11 +111,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(HAL_GetTick() - timeStamp > 1000)
-	  //if( micros()-timeStamp > 1000000 )
+	  if( micros()-timeStamp > 1000000 )
 	  {
-		  //timeStamp = micros();
-		  timeStamp = HAL_GetTick();
+		  timeStamp = micros();
 		  HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
 	  }
 
@@ -355,7 +353,7 @@ uint64_t micros()
 
 
 //Overflow Interrupt
-void HAL_TIM_PeriodElapsedHalfCpltCallback(TIM_HandleTypeDef *htim)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim11)
 	{
