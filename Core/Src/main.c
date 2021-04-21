@@ -50,6 +50,8 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 uint64_t _micros = 0;
 uint16_t capturedata[CAPTURENUM] = {0};
+int32_t  DiffTime[CAPTURENUM-1]  = {0};
+float    MeanTime = 0;
 
 /* USER CODE END PV */
 
@@ -62,6 +64,7 @@ static void MX_TIM1_Init(void);
 static void MX_TIM11_Init(void);
 
 /* USER CODE BEGIN PFP */
+void encoderSpeedReaderCycle();
 uint64_t micros();
 
 /* USER CODE END PFP */
@@ -123,7 +126,7 @@ int main(void)
 	  }
 
 
-
+	  encoderSpeedReaderCycle();
 
 
     /* USER CODE END WHILE */
@@ -364,6 +367,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		_micros += 65535;
 	}
+}
+
+void encoderSpeedReaderCycle()
+{
+	//get DMA Position
+	uint32_t CapPos = CAPTURENUM - __HAL_DMA_GET_COUNTER(htim1.hdma[TIM_DMA_ID_CC1]);
+	uint32_t sum = 0;
+
+	//calculate diff from all buffer
+	for(register int i = 0; i<CAPTURENUM-1; i++)
+	{
+		DiffTime[i] = capturedata[(CapPos+1+i)%CAPTURENUM] - capturedata[(CapPos+i)%CAPTURENUM];
+		//in case of overflow timer
+		if(DiffTime[i] < 0)
+		{
+			DiffTime[i] += 65535;
+		}
+
+		//sum all 15 diff
+		sum += DiffTime[i];
+	}
+	MeanTime = sum/ (float)(CAPTURENUM-1);
 }
 
 /* USER CODE END 4 */
