@@ -113,9 +113,10 @@ int main(void)
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim1);
-  HAL_TIM_IC_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t*)capturedata, CAPTURENUM);
-
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_Base_Start_IT(&htim5);
   HAL_TIM_Base_Start_IT(&htim11);
+  HAL_TIM_IC_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t*)capturedata, CAPTURENUM);
   uint64_t timeStamp = 0;
 
   /* USER CODE END 2 */
@@ -124,7 +125,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if( micros()-timeStamp > 1000000 )
+	  if( micros()-timeStamp > 100000 ) //5 Hz = 0.2s per Period = 0.1s per halfPeriod
 	  {
 		  timeStamp = micros();
 		  HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
@@ -464,14 +465,14 @@ static void MX_GPIO_Init(void)
 
 uint64_t micros()
 {
-	return _micros + htim11.Instance->CNT;
+	return _micros + htim5.Instance->CNT;
 }
 
 
 //Overflow Interrupt
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if(htim == &htim11)
+	if(htim == &htim5)
 	{
 		_micros += 65535;
 	}
