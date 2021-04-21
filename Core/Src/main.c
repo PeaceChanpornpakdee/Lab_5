@@ -272,7 +272,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 99;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 65535;
+  htim2.Init.Period = 4294967295;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -499,9 +499,7 @@ void encoderSpeedReaderCycle()
 		DiffTime[i] = capturedata[(CapPos+1+i)%CAPTURENUM] - capturedata[(CapPos+i)%CAPTURENUM];
 		//in case of overflow timer
 		if(DiffTime[i] < 0)
-		{
-			DiffTime[i] += 65535;
-		}
+		{ DiffTime[i] += 65535;}
 
 		//sum all 15 diff
 		sum += DiffTime[i];
