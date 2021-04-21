@@ -118,6 +118,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim5);
   HAL_TIM_Base_Start_IT(&htim11);
   HAL_TIM_IC_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t*)capturedata, CAPTURENUM);
+  HAL_TIM_IC_Start_DMA(&htim2, TIM_CHANNEL_2, (uint32_t*)capturedata, CAPTURENUM);
   uint64_t timeStamp = 0;
 
   /* USER CODE END 2 */
@@ -486,7 +487,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void encoderSpeedReaderCycle()
 {
 	//get DMA Position
-	uint32_t CapPos = CAPTURENUM - __HAL_DMA_GET_COUNTER(htim1.hdma[TIM_DMA_ID_CC1]);
+	uint32_t CapPos = CAPTURENUM - __HAL_DMA_GET_COUNTER(htim2.hdma[TIM_DMA_ID_CC2]);
 	uint32_t sum = 0;
 
 	//calculate diff from all buffer
