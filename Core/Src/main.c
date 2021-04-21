@@ -47,6 +47,7 @@ DMA_HandleTypeDef hdma_tim1_ch1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint64_t _micros = 0;
 
 /* USER CODE END PV */
 
@@ -57,7 +58,9 @@ static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM11_Init(void);
+
 /* USER CODE BEGIN PFP */
+uint64_t micros();
 
 /* USER CODE END PFP */
 
@@ -99,6 +102,8 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim11);
+  uint64_t timeStamp = 0;
 
   /* USER CODE END 2 */
 
@@ -106,6 +111,18 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(HAL_GetTick() - timeStamp > 1000)
+	  //if( micros()-timeStamp > 1000000 )
+	  {
+		  //timeStamp = micros();
+		  timeStamp = HAL_GetTick();
+		  HAL_GPIO_TogglePin(LD2_GPIO_Port,LD2_Pin);
+	  }
+
+
+
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -330,6 +347,21 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+uint64_t micros()
+{
+	return _micros + htim11.Instance->CNT;
+}
+
+
+//Overflow Interrupt
+void HAL_TIM_PeriodElapsedHalfCpltCallback(TIM_HandleTypeDef *htim)
+{
+	if(htim == &htim11)
+	{
+		_micros += 65535;
+	}
+}
 
 /* USER CODE END 4 */
 
