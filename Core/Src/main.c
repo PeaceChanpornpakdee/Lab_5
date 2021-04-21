@@ -52,7 +52,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint64_t _micros = 0;
-uint16_t capturedata[CAPTURENUM] = {0};
+uint32_t capturedata[CAPTURENUM] = {0};
 int32_t  DiffTime[CAPTURENUM-1]  = {0};
 float    MeanTime = 0;
 float    Speed    = 0;
@@ -64,10 +64,10 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_TIM1_Init(void);
 static void MX_TIM11_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM5_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 void encoderSpeedReaderCycle();
 uint64_t micros();
@@ -109,17 +109,17 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART2_UART_Init();
-  MX_TIM1_Init();
   MX_TIM11_Init();
   MX_TIM2_Init();
   MX_TIM5_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim1);
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim5);
   HAL_TIM_Base_Start_IT(&htim11);
-  HAL_TIM_IC_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t*)capturedata, CAPTURENUM);
-  HAL_TIM_IC_Start_DMA(&htim2, TIM_CHANNEL_2, (uint32_t*)capturedata, CAPTURENUM);
+//  HAL_TIM_IC_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t*)capturedata, CAPTURENUM);
+  HAL_TIM_IC_Start_DMA(&htim2, TIM_CHANNEL_2, capturedata, CAPTURENUM);
   uint64_t timeStamp = 0;
 
   /* USER CODE END 2 */
@@ -499,7 +499,9 @@ void encoderSpeedReaderCycle()
 		DiffTime[i] = capturedata[(CapPos+1+i)%CAPTURENUM] - capturedata[(CapPos+i)%CAPTURENUM];
 		//in case of overflow timer
 		if(DiffTime[i] < 0)
-		{ DiffTime[i] += 65535;}
+		{
+			DiffTime[i] += 4294967295;
+		}
 
 		//sum all 15 diff
 		sum += DiffTime[i];
