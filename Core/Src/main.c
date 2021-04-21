@@ -55,6 +55,7 @@ uint64_t _micros = 0;
 uint16_t capturedata[CAPTURENUM] = {0};
 int32_t  DiffTime[CAPTURENUM-1]  = {0};
 float    MeanTime = 0;
+float    Speed    = 0;
 
 /* USER CODE END PV */
 
@@ -135,6 +136,8 @@ int main(void)
 
 
 	  encoderSpeedReaderCycle();
+
+	  Speed = 60*1000000 / (12*64*MeanTime);
 
 
     /* USER CODE END WHILE */
