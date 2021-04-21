@@ -32,6 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define CAPTURENUM 16
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,6 +49,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint64_t _micros = 0;
+uint16_t capturedata[CAPTURENUM] = {0};
 
 /* USER CODE END PV */
 
@@ -102,6 +104,9 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim1);
+  HAL_TIM_IC_Start_DMA(&htim1, TIM_CHANNEL_1, (uint32_t*)capturedata, CAPTURENUM);
+
   HAL_TIM_Base_Start_IT(&htim11);
   uint64_t timeStamp = 0;
 
